@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>     
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!-- <script src="jquery-3.6.0.min.js"></script> -->
+    <!-- <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <div class="col-md-3 box-insert">
+        <h1>
+            Insert
+        </h1>
+
+        <div class="wrap-input100 validate-input">
+            <span class="label-input100">Your Name</span>
+            <input class="input100" id = "input-name" type="text" name="name" placeholder="Enter your name">
+            <span class="focus-input100"></span>
+        </div>
+
+        <div class="col-md-4">
+            <button class="btn btn-primary" id="btn-insert">Insert</button>
+        </div>
+        <div id="text-insert" class="col-md-8">
+            <p>Name Successfully Inserted</p>
+        </div>
+        
+    </div>
+
+    <div class="col-md-9 box-display">
+        <h1>
+            Display
+        </h1>
+
+        <div class="scroll">
+            <table class="table" id="addHere">
+                <thead style="background-color: dimgray;color:white;">
+                    <tr>
+                        <th scope="col">
+                            Number
+                        </th>
+                        <th scope="col">
+                            Name
+                        </th>
+                        <th scope="col">
+                            Edit
+                        </th>
+                        <th scope="col">
+                            Delete
+                        </th>
+                    </tr>
+                </thead>
+                <tr></tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            displayStudents()
+        })
+
+        function displayStudents(){
+            $.ajax({
+                url:"http://arjunbala.com/DemoAPI/getAllStudents.php",
+                type:"POST",
+                dataType:"json"
+            }).done(function(json){
+                $.each(json, function(i, value){
+                    $('#addHere').append("<tr id="+value.StudentID+"> <td id='number'> " + value.StudentID +" </td> <td class='name'> "+ value.StudentName +" </td> <td> <input onclick='edit(this)' id='edit' type='button' value='Edit' class='btn btn-info'> <td> <input id='delete' onclick='deleteStudent(this)' type='button' value='Delete' class='btn btn-danger'></td> </tr>")
+                })
+            })
+        }
+
+        $('#btn-insert').click(function(){
+            insertStudent($('#input-name').val())
+            console.log($('#input-name').val())
+            $('#input-name').val('')
+            $("#text-insert").slideToggle(1000, "swing").delay(2000);
+            $("#text-insert").slideToggle(1000, "swing");
+        })
+
+        function insertStudent(name)
+        {
+            $.ajax({
+                url:"http://arjunbala.com/DemoAPI/insertStudent.php",
+                type:"POST",
+                data:{
+                    StudentName:name
+                },
+                dataType:"html"
+            }).done(function(){
+                $("#addHere").find("tr:gt(1)").remove();//gt = greater than
+                displayStudents();
+            })
+        }
+
+        function deleteStudent(object){
+            // console.log($(object).parent().parent().get(0).id);
+            var id = $(object).parent().parent().get(0).id;
+
+            $.ajax({
+                url:"http://arjunbala.com/DemoAPI/deleteStudent.php",
+                type:"POST",
+                data:{StudentID:id},
+                dataType:"html"
+            }).done(function(){
+                $("#addHere").find("tr:gt(1)").remove();
+                displayStudents();
+            })
+        }
+    </script>
+</body>
+
+<!-- http://arjunbala.com/DemoAPI/ -->
+
